@@ -233,17 +233,19 @@ uint8 MccFileProcNextBuffer( Context* rootCtxPtr, boolean* isDonePtr ) {
         }
     }
 
-    char* timecode = strtok(line, "\t");
-    char* mccdata = strtok(NULL, "\t");
+    char* timecode = strtok(line, " \t");
+    char* mccdata = strtok(NULL, " \t");
 
-    ASSERT(timecode);
-    ASSERT(mccdata);
+    if( (timecode == NULL) || (mccdata == NULL) ) {
+        LOG(DEBUG_LEVEL_WARN, DBG_FILE_IN, "Unable to parse MCC line (missing timecode or data): %s", line);
+        return TRUE;
+    }
 
 // TODO - This is a kludge! Fully support the MCC 2.0 Stuff and remove this
-    if( (strlen(timecode) > 11) && (timecode[11] == '.') ) {
+    if( (strlen(timecode) != 11) || (strchr(timecode, '.') != NULL) || (strchr(timecode, ',') != NULL) ) {
         if( ctxPtr->oneShotWarningFlag == FALSE ) {
             ctxPtr->oneShotWarningFlag = TRUE;
-            LOG(DEBUG_LEVEL_WARN, DBG_FILE_IN, "Detected MCC 2.0. Handling file (in a kludgy way), but MCC 2.0 is not fully supported.");
+            LOG(DEBUG_LEVEL_WARN, DBG_FILE_IN, "Detected MCC 2.0/extended timecode. Skipping extended lines; MCC 2.0 is not fully supported.");
         }
         return TRUE;
     }

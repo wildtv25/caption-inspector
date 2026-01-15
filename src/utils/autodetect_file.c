@@ -265,7 +265,13 @@ FileType DetermineFileType( char* fileNameStr ) {
         } else if( strncmp(line, "Time Code Rate=", strlen("Time Code Rate=")) == 0 ) {
             continue;
         } else {
-            char* timecode = strtok(line, "\t");
+            char* timecode = strtok(line, " \t");
+            if( timecode == NULL ) {
+                continue;
+            }
+            if( (strlen(timecode) != 11) || (strchr(timecode, '.') != NULL) || (strchr(timecode, ',') != NULL) ) {
+                continue;
+            }
             if( firstCaptionTimeSet == FALSE ) {
                 wasSuccessful = decodeTimeCode(timecode, &firstCaptionTime);
                 firstCaptionTimeSet = TRUE;
