@@ -245,7 +245,7 @@ uint8 MccFileProcNextBuffer( Context* rootCtxPtr, boolean* isDonePtr ) {
     if( (strlen(timecode) != 11) || (strchr(timecode, '.') != NULL) || (strchr(timecode, ',') != NULL) ) {
         if( ctxPtr->oneShotWarningFlag == FALSE ) {
             ctxPtr->oneShotWarningFlag = TRUE;
-            LOG(DEBUG_LEVEL_WARN, DBG_FILE_IN, "Detected MCC 2.0/extended timecode. Skipping extended lines; MCC 2.0 is not fully supported.");
+            LOG(DEBUG_LEVEL_WARN, DBG_FILE_IN, "Detected MCC 2.0. Skipping lines with AFD data; MCC 2.0 is not fully supported.");
         }
         return TRUE;
     }
