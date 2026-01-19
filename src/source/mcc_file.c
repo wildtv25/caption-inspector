@@ -127,6 +127,8 @@ boolean MccFileInitialize( Context* rootCtxPtr, char* fileNameStr ) {
             return FALSE;
         } else if( (strncmp(line, "//", 2) == 0) || (read < 5) ) {
             continue;
+        } else if( line[0] == '\r' || line[0] == '\n' ) {
+            continue;
         } else if( strncmp(line, "UUID=", strlen("UUID=")) == 0 ) {
             continue;
         } else if( strncmp(line, "Creation Program=", strlen("Creation Program=")) == 0 ) {
