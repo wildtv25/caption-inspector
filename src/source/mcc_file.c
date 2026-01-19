@@ -104,6 +104,13 @@ boolean MccFileInitialize( Context* rootCtxPtr, char* fileNameStr ) {
     while( captionsStarted == FALSE ) {
         pos = ftell(ctxPtr->captionsFilePtr);
         read = getline(&line, &len, ctxPtr->captionsFilePtr);
+        if( read == -1 ) {
+            LOG(DEBUG_LEVEL_WARN, DBG_FILE_IN, "No caption data found in MCC file: %s", ctxPtr->captionFileName);
+            fclose(ctxPtr->captionsFilePtr);
+            free(ctxPtr);
+            rootCtxPtr->mccFileCtxPtr = NULL;
+            return FALSE;
+        }
         
         if( strncmp(line, "Scenarist_SCC V1.0", strlen("Scenarist_SCC V1.0")) == 0 ) {
             LOG(DEBUG_LEVEL_ERROR, DBG_FILE_IN, "Spurious line from an SCC File");
