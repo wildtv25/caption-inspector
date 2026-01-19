@@ -59,7 +59,7 @@
 LinkInfo MccOutInitialize( Context* ctxPtr ) {
     ASSERT(ctxPtr);
     ASSERT(!ctxPtr->mccOutputCtxPtr);
-    char tempFilename[MAX_FILE_NAME_LEN];
+    /*char tempFilename[MAX_FILE_NAME_LEN];*/
 
     ctxPtr->mccOutputCtxPtr = malloc(sizeof(MccOutputCtx));
     ctxPtr->mccOutputCtxPtr->fp = NULL;

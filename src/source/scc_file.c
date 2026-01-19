@@ -103,13 +103,6 @@ boolean SccFileInitialize( Context* rootCtxPtr, char* fileNameStr, uint32 frTime
     while( captionsStarted == FALSE ) {
         pos = ftell(ctxPtr->captionsFilePtr);
         read = getline(&line, &len, ctxPtr->captionsFilePtr);
-        if( read == -1 ) {
-            LOG(DEBUG_LEVEL_WARN, DBG_FILE_IN, "No caption data found in SCC file: %s", ctxPtr->captionFileName);
-            fclose(ctxPtr->captionsFilePtr);
-            free(ctxPtr);
-            rootCtxPtr->sccFileCtxPtr = NULL;
-            return FALSE;
-        }
         
         if( strncmp(line, "Scenarist_SCC V1.0", strlen("Scenarist_SCC V1.0")) == 0 ) {
             if( ctxPtr->frameRateTimesOneHundred == 0 ) {

@@ -104,13 +104,6 @@ boolean MccFileInitialize( Context* rootCtxPtr, char* fileNameStr ) {
     while( captionsStarted == FALSE ) {
         pos = ftell(ctxPtr->captionsFilePtr);
         read = getline(&line, &len, ctxPtr->captionsFilePtr);
-        if( read == -1 ) {
-            LOG(DEBUG_LEVEL_WARN, DBG_FILE_IN, "No caption data found in MCC file: %s", ctxPtr->captionFileName);
-            fclose(ctxPtr->captionsFilePtr);
-            free(ctxPtr);
-            rootCtxPtr->mccFileCtxPtr = NULL;
-            return FALSE;
-        }
         
         if( strncmp(line, "Scenarist_SCC V1.0", strlen("Scenarist_SCC V1.0")) == 0 ) {
             LOG(DEBUG_LEVEL_ERROR, DBG_FILE_IN, "Spurious line from an SCC File");
@@ -240,16 +233,14 @@ uint8 MccFileProcNextBuffer( Context* rootCtxPtr, boolean* isDonePtr ) {
         }
     }
 
-    char* timecode = strtok(line, " \t");
-    char* mccdata = strtok(NULL, " \t");
+    char* timecode = strtok(line, "\t");
+    char* mccdata = strtok(NULL, "\t");
 
-    if( (timecode == NULL) || (mccdata == NULL) ) {
-        LOG(DEBUG_LEVEL_WARN, DBG_FILE_IN, "Unable to parse MCC line (missing timecode or data): %s", line);
-        return TRUE;
-    }
+    ASSERT(timecode);
+    ASSERT(mccdata);
 
 // TODO - This is a kludge! Fully support the MCC 2.0 Stuff and remove this
-    if( (strlen(timecode) != 11) || (strchr(timecode, '.') != NULL) || (strchr(timecode, ',') != NULL) ) {
+    if( (strlen(timecode) > 11) && (timecode[11] == '.') ) {
         if( ctxPtr->oneShotWarningFlag == FALSE ) {
             ctxPtr->oneShotWarningFlag = TRUE;
             LOG(DEBUG_LEVEL_WARN, DBG_FILE_IN, "Detected MCC 2.0. Skipping lines with AFD data; MCC 2.0 is not fully supported.");
