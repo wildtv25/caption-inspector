@@ -266,9 +266,26 @@ FileType DetermineFileType( char* fileNameStr ) {
             continue;
         } else {
             char* timecode = strtok(line, "\t");
+            if( timecode == NULL ) {
+                LOG(DEBUG_LEVEL_WARN, DBG_FILE_IN, "Unable to parse timecode on line: %s", line);
+                fclose(filePtr);
+                return UNK_CAPTIONS_FILE;
+            }
+
+            // MCC 2.0 may append suffix data (e.g. ".0,10") to the base HH:MM:SS:FF.
+            // Keep autodetection aligned with MCC parser behavior and decode only the base part.
+            char timecodeForDecode[12];
+            if( (retval == MCC_CAPTIONS_FILE) && (strlen(timecode) > 11) && (timecode[11] == '.') ) {
+                strncpy(timecodeForDecode, timecode, 11);
+                timecodeForDecode[11] = '\0';
+                timecode = timecodeForDecode;
+            }
+
             if( firstCaptionTimeSet == FALSE ) {
                 wasSuccessful = decodeTimeCode(timecode, &firstCaptionTime);
-                firstCaptionTimeSet = TRUE;
+                if( wasSuccessful == TRUE ) {
+                    firstCaptionTimeSet = TRUE;
+                }
             } else {
                 wasSuccessful = decodeTimeCode(timecode, &lastCaptionTime);
             }
